@@ -1,341 +1,129 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Server,
-  CheckCircle,
-  AlertTriangle,
-  XCircle,
-  Activity,
-  History,
-  Network,
-  ArrowRight,
-  ShieldCheck,
-  RefreshCw
-} from 'lucide-react';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { Activity, RefreshCw } from 'lucide-react';
 import DisclaimerBanner from '../components/DisclaimerBanner';
-import { fetchDashboardStats } from '../api';
+import { fetchDiagnostics } from '../api';
 
-const COLORS = ['#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#8b5cf6', '#06b6d4', '#ec4899'];
-
-export default function Dashboard({ setActiveTab, setSelectedReportId }) {
-  const [stats, setStats] = useState(null);
+export default function Dashboard({ setActiveTab, setReportId }) {
+  const [recentReport, setRecentReport] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const loadStats = async () => {
-    try {
-      setLoading(true);
-      const data = await fetchDashboardStats();
-      setStats(data);
-      setError(null);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    loadStats();
+    async function loadRecent() {
+      try {
+        setLoading(true);
+        const sessions = await fetchDiagnostics();
+        if (sessions.length > 0) {
+          setRecentReport(sessions[0]);
+        }
+      } catch (err) {
+        console.error('Failed to load diagnostics', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadRecent();
   }, []);
 
-  if (loading && !stats) {
-    return (
-      <div>
-        <DisclaimerBanner />
-        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-secondary)' }}>
-          <RefreshCw size={32} className="spin" style={{ animation: 'spin 1.5s linear infinite' }} />
-          <div style={{ marginTop: '12px' }}>Loading network diagnostics telemetry...</div>
-        </div>
-      </div>
-    );
-  }
+  const handleRunDiagnosis = () => {
+    setReportId(null);
+    setActiveTab('diagnosis');
+  };
 
-  const chartData = stats?.fault_distribution || [];
-  const recentSessions = stats?.recent_sessions || [];
+  const handleViewReport = () => {
+    setReportId(recentReport.id);
+    setActiveTab('diagnosis');
+  };
+
+  const getStatBadge = (status) => {
+    if (status === 'HEALTHY') return { class: 'badge-healthy', label: 'Healthy', color: 'var(--status-healthy)' };
+    if (status === 'FAULT DETECTED') return { class: 'badge-fault', label: 'Fault Detected', color: 'var(--status-fault)' };
+    if (status === 'POSSIBLE FAULT') return { class: 'badge-possible', label: 'Possible Fault', color: 'var(--status-warning)' };
+    return { class: 'badge-insufficient', label: 'Insufficient Evidence', color: 'var(--status-neutral)' };
+  };
 
   return (
     <div>
       <DisclaimerBanner />
 
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">
-            <Activity size={26} color="#3b82f6" />
-            Network Operations & Diagnostics Dashboard
-          </h1>
-          <p className="page-desc">
-            Evidence-based failure localization overview for Cisco Packet Tracer simulations
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button className="btn btn-secondary btn-sm" onClick={loadStats}>
-            <RefreshCw size={14} />
-            Refresh
-          </button>
-          <button className="btn btn-primary btn-sm" onClick={() => setActiveTab('diagnostics')}>
-            <Activity size={14} />
-            Run New Diagnosis
-          </button>
-        </div>
+      {/* Project Description */}
+      <div className="card" style={{ marginBottom: '24px' }}>
+        <h1 className="page-title">
+          <Activity size={26} color="var(--brand-blue)" />
+          NetDiag Suite
+        </h1>
+        <p className="page-desc" style={{ marginTop: '8px', fontSize: '1rem', lineHeight: 1.7, maxWidth: '720px' }}>
+          An offline, evidence-based network diagnostic tool for Cisco Packet Tracer simulations.
+          After running diagnostic commands in Packet Tracer, enter your test results or paste raw
+          command outputs to automatically detect connectivity failures and localize them to specific
+          routers, interfaces, or links.
+        </p>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid-cols-4">
-        <div className="stat-card">
-          <div className="stat-info">
-            <div className="stat-label">Registered Devices</div>
-            <div className="stat-value">{stats?.total_devices ?? 0}</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Across {stats?.total_networks ?? 1} topology profile(s)
-            </div>
-          </div>
-          <div className="stat-icon blue">
-            <Server size={22} />
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-info">
-            <div className="stat-label">Healthy Sessions</div>
-            <div className="stat-value" style={{ color: '#34d399' }}>{stats?.healthy_tests ?? 0}</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Full end-to-end reachability
-            </div>
-          </div>
-          <div className="stat-icon green">
-            <CheckCircle size={22} />
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-info">
-            <div className="stat-label">Suspected Faults</div>
-            <div className="stat-value" style={{ color: '#f87171' }}>{stats?.suspected_faults ?? 0}</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Localized failure points
-            </div>
-          </div>
-          <div className="stat-icon red">
-            <XCircle size={22} />
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-info">
-            <div className="stat-label">Resolved Faults</div>
-            <div className="stat-value" style={{ color: '#a78bfa' }}>{stats?.resolved_faults ?? 0}</div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Packet Tracer recovery verified
-            </div>
-          </div>
-          <div className="stat-icon purple">
-            <ShieldCheck size={22} />
-          </div>
-        </div>
+      {/* Primary Action */}
+      <div className="card" style={{ textAlign: 'center', padding: '36px 24px', marginBottom: '24px' }}>
+        <button className="btn btn-primary btn-lg" onClick={handleRunDiagnosis}>
+          <Activity size={20} />
+          Run a New Diagnosis
+        </button>
       </div>
 
-      {/* Main Dashboard Rows */}
-      <div className="grid-cols-2" style={{ marginBottom: '24px' }}>
-        {/* Fault Distribution Chart */}
-        <div className="card">
-          <div className="card-header">
-            <div className="card-title">
-              <AlertTriangle size={18} color="#f59e0b" />
-              Fault Category Breakdown
-            </div>
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>Rule-Engine Inferences</span>
-          </div>
-
-          {chartData.length > 0 ? (
-            <div style={{ width: '100%', height: 260 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={55}
-                    outerRadius={85}
-                    paddingAngle={4}
-                    dataKey="count"
-                    nameKey="category"
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#111827',
-                      borderColor: '#374151',
-                      borderRadius: '8px',
-                      color: '#f9fafb',
-                      fontSize: '0.85rem'
-                    }}
-                  />
-                  <Legend
-                    wrapperStyle={{ fontSize: '0.8rem', color: '#9ca3af' }}
-                    layout="horizontal"
-                    verticalAlign="bottom"
-                    align="center"
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          ) : (
-            <div style={{
-              height: 240,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--text-muted)',
-              fontSize: '0.88rem'
-            }}>
-              <CheckCircle size={36} color="#10b981" style={{ opacity: 0.6, marginBottom: '8px' }} />
-              <div>No active network faults recorded yet.</div>
-              <div style={{ fontSize: '0.8rem', marginTop: '4px' }}>Run a diagnostic session or load a sample scenario.</div>
-            </div>
-          )}
-        </div>
-
-        {/* Quick Actions & System Info */}
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div>
-            <div className="card-header">
-              <div className="card-title">
-                <Network size={18} color="#3b82f6" />
-                Network Health Summary & Actions
-              </div>
-            </div>
-
-            <div style={{
-              background: '#0d1424',
-              borderRadius: '8px',
-              padding: '16px',
-              border: '1px solid var(--border-subtle)',
-              marginBottom: '18px'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>System Operational State:</span>
-                <span style={{ color: '#34d399', fontWeight: 600 }}>Ready for Packet Tracer Inputs</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Diagnostic Rules Active:</span>
-                <span style={{ color: '#60a5fa', fontWeight: 600 }}>Rules A through I (Config, Route, Link, Admin, ACL)</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Localization Engine:</span>
-                <span style={{ color: '#a78bfa', fontWeight: 600 }}>Graph BFS & Hop-by-Hop Disconnect Analysis</span>
-              </div>
-            </div>
-
-            <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Use this system after executing troubleshooting commands in your Packet Tracer lab. Enter connectivity test results or paste raw command outputs from routers and workstations to pinpoint the root cause.
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginTop: '18px' }}>
-            <button className="btn btn-secondary" onClick={() => setActiveTab('network')}>
-              <Network size={15} />
-              View Topology
-            </button>
-            <button className="btn btn-primary" onClick={() => setActiveTab('diagnostics')}>
-              <Activity size={15} />
-              Run Diagnosis
-            </button>
-            <button className="btn btn-secondary" onClick={() => setActiveTab('guide')}>
-              <ArrowRight size={15} />
-              Failure Guide
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Sessions Table */}
+      {/* Most Recent Diagnostic Result */}
       <div className="card">
-        <div className="card-header">
-          <div className="card-title">
-            <History size={18} color="#60a5fa" />
-            Recent Diagnostic Sessions
+        <h2 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Activity size={18} color="var(--brand-blue)" />
+          Most Recent Diagnostic Result
+        </h2>
+
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '36px 0', color: 'var(--text-secondary)' }}>
+            <RefreshCw size={24} className="spin" />
+            <div style={{ marginTop: '10px', fontSize: '0.88rem' }}>Loading recent diagnostics...</div>
           </div>
-          <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('history')}>
-            View All History
-            <ArrowRight size={14} />
-          </button>
-        </div>
-
-        {recentSessions.length > 0 ? (
-          <div className="table-container">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Session ID</th>
-                  <th>Timestamp</th>
-                  <th>Source Host</th>
-                  <th>Destination</th>
-                  <th>Status</th>
-                  <th>Confidence</th>
-                  <th>Likely Cause</th>
-                  <th style={{ textAlign: 'right' }}>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentSessions.map((session) => {
-                  let badgeClass = 'badge-neutral';
-                  if (session.overall_status === 'HEALTHY') badgeClass = 'badge-healthy';
-                  else if (session.overall_status === 'FAULT DETECTED') badgeClass = 'badge-fault';
-                  else if (session.overall_status === 'POSSIBLE FAULT') badgeClass = 'badge-possible';
-                  else if (session.overall_status === 'INSUFFICIENT EVIDENCE') badgeClass = 'badge-insufficient';
-
-                  return (
-                    <tr key={session.id}>
-                      <td className="mono" style={{ color: '#38bdf8', fontSize: '0.82rem' }}>
-                        {session.session_id}
-                      </td>
-                      <td style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                        {new Date(session.timestamp).toLocaleString()}
-                      </td>
-                      <td>
-                        <strong>{session.source_device}</strong>
-                        {session.source_ip && <span className="mono" style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>{session.source_ip}</span>}
-                      </td>
-                      <td>
-                        <strong>{session.destination_device}</strong>
-                        {session.destination_ip && <span className="mono" style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block' }}>{session.destination_ip}</span>}
-                      </td>
-                      <td>
-                        <span className={`badge ${badgeClass}`}>{session.overall_status}</span>
-                      </td>
-                      <td>
-                        <span className={`confidence-meter confidence-${(session.confidence || 'low').toLowerCase()}`}>
-                          {session.confidence}
-                        </span>
-                      </td>
-                      <td style={{ maxWidth: '240px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {session.likely_cause}
-                      </td>
-                      <td style={{ textAlign: 'right' }}>
-                        <button
-                          className="btn btn-secondary btn-sm"
-                          onClick={() => {
-                            setSelectedReportId(session.id);
-                            setActiveTab('report');
-                          }}
-                        >
-                          View Report
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+        ) : !recentReport ? (
+          <div style={{ textAlign: 'center', padding: '36px 0', color: 'var(--text-secondary)' }}>
+            <div style={{ fontSize: '0.88rem' }}>No diagnostic sessions recorded yet.</div>
+            <div style={{ fontSize: '0.82rem', marginTop: '6px' }}>
+              Click "Run a New Diagnosis" above to begin.
+            </div>
           </div>
         ) : (
-          <div style={{ textAlign: 'center', padding: '36px 0', color: 'var(--text-muted)' }}>
-            No diagnostic sessions performed yet. Click "Run Diagnosis" above to test a scenario!
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
+              <span className={`badge ${getStatBadge(recentReport.overall_status).class}`}>
+                {getStatBadge(recentReport.overall_status).label}
+              </span>
+              <span className={`badge ${`confidence-${(recentReport.confidence || 'low').toLowerCase()}`}`}>
+                {recentReport.confidence} Confidence
+              </span>
+            </div>
+
+            <div style={{ marginBottom: '10px' }}>
+              <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                Likely Cause
+              </div>
+              <div style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                {recentReport.likely_cause}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '10px', fontSize: '0.86rem', color: 'var(--text-secondary)' }}>
+              <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{recentReport.source_device}</span>
+              {' \u{2192} '}
+              <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{recentReport.destination_device}</span>
+              {'  \u{B7}  '}
+              <span style={{ color: 'var(--text-muted)' }}>
+                {new Date(recentReport.timestamp).toLocaleString()}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
+              <button className="btn btn-secondary btn-sm" onClick={handleViewReport}>
+                View Full Report
+              </button>
+              <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('history')}>
+                View All History
+              </button>
+            </div>
           </div>
         )}
       </div>

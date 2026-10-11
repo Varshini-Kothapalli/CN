@@ -1,5 +1,1489 @@
 [
   {
+    "id": "diag-bcccbd02",
+    "session_id": "SES-20261011160110-77ED",
+    "timestamp": "2026-10-11T16:01:10.572591+00:00",
+    "network_id": "net-cisco-sample-01",
+    "network_name": "Enterprise Campus & Branch Network",
+    "source_device": "PC1",
+    "source_ip": "192.168.10.10",
+    "destination_device": "Server1",
+    "destination_ip": "192.168.30.10",
+    "overall_status": "POSSIBLE FAULT",
+    "confidence": "Medium",
+    "confidence_reason": "Ping to destination failed, but no intermediate router or interface evidence was supplied to isolate the root cause.",
+    "individual_tests": {
+      "source_ip_configuration": "PASS",
+      "default_gateway_ping": "PASS",
+      "destination_ping": "FAIL",
+      "link_state": "UNKNOWN",
+      "hop_R1_reachability": "PASS"
+    },
+    "identified_symptoms": [
+      "End-to-end destination reachability failure to Server1 (192.168.30.10)"
+    ],
+    "likely_cause": "Remote Connectivity Failure (Downstream link, missing return route, or remote host offline)",
+    "suspected_failure_location": "Remote Network Path beyond R1",
+    "path_hops": [
+      {
+        "device_id": "dev-pc1",
+        "device_name": "PC1",
+        "device_type": "PC",
+        "ip": "192.168.10.10",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-sw1",
+        "device_name": "SW1",
+        "device_type": "Switch",
+        "ip": "192.168.10.2",
+        "reachability": "UNKNOWN",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r1",
+        "device_name": "R1",
+        "device_type": "Router",
+        "ip": "192.168.10.1",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r2",
+        "device_name": "R2",
+        "device_type": "Router",
+        "ip": "192.168.20.1",
+        "reachability": "NOT_TESTED",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r3",
+        "device_name": "R3",
+        "device_type": "Router",
+        "ip": "192.168.30.1",
+        "reachability": "NOT_TESTED",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-sw3",
+        "device_name": "SW3",
+        "device_type": "Switch",
+        "ip": "192.168.30.2",
+        "reachability": "UNKNOWN",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-server1",
+        "device_name": "Server1",
+        "device_type": "Server",
+        "ip": "192.168.30.10",
+        "reachability": "FAIL",
+        "is_fault_region": true
+      }
+    ],
+    "localized_link": null,
+    "supporting_evidence": [
+      {
+        "source": "ping",
+        "description": "Could not determine ping result from raw text",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "destination_ping",
+        "description": "End-to-end ping to Server1 (192.168.30.10) failed.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "destination_ping",
+        "description": "Local gateway was reachable, local segment is functional.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "destination_ping",
+        "description": "Last verified hop: R1.",
+        "status": "SUPPORTING"
+      }
+    ],
+    "recommended_actions": [
+      "Execute 'tracert' / 'traceroute' from source to destination to locate the exact drop-off point.",
+      "Verify remote host IP configuration and default gateway in Packet Tracer.",
+      "Verify reverse routing: check if destination router has a route back to the source subnet.",
+      "Check intermediate router interfaces along the path using 'show ip interface brief'."
+    ],
+    "unresolved_questions": [
+      "Run 'traceroute' or 'tracert' from source PC.",
+      "Verify Server1 interface status and default gateway in Packet Tracer."
+    ],
+    "is_resolved": false,
+    "resolution_notes": null,
+    "recovery_verification_status": "PENDING",
+    "raw_evidence": {
+      "ping_output": "access-list 10 deny host 192.168.10.10\naccess-list 10 permit any\ninterface GigabitEthernet0/0\n ip access-group 10 in",
+      "traceroute_output": null,
+      "show_ip_int_brief": null,
+      "show_ip_route": null,
+      "show_running_config": "access-list 10 deny host 192.168.10.10\naccess-list 10 permit any\ninterface GigabitEthernet0/0\n ip access-group 10 in"
+    },
+    "structured_results": {
+      "source_config_valid": "PASS",
+      "configured_source_ip": "192.168.10.10",
+      "configured_subnet_mask": "255.255.255.0",
+      "configured_default_gateway": "192.168.10.1",
+      "default_gateway_ping": "PASS",
+      "intermediate_hops": [
+        {
+          "hop_device": "R1",
+          "hop_ip": null,
+          "reachability": "PASS"
+        }
+      ],
+      "destination_ping": "FAIL",
+      "interface_observations": [],
+      "routing_observations": [],
+      "acl_vlan_observation": null,
+      "link_status_observation": "UNKNOWN",
+      "failed_link_id": null,
+      "additional_observations": null
+    }
+  },
+  {
+    "id": "diag-38e1fc7c",
+    "session_id": "SES-20261011155331-B10B",
+    "timestamp": "2026-10-11T15:53:31.802708+00:00",
+    "network_id": "net-cisco-sample-01",
+    "network_name": "Enterprise Campus & Branch Network",
+    "source_device": "PC1",
+    "source_ip": "192.168.10.10",
+    "destination_device": "Server1",
+    "destination_ip": "192.168.30.10",
+    "overall_status": "FAULT DETECTED",
+    "confidence": "High",
+    "confidence_reason": "Routing table inspection explicitly confirmed the absent routing prefix on intermediate router.",
+    "individual_tests": {
+      "source_ip_configuration": "PASS",
+      "default_gateway_ping": "PASS",
+      "destination_ping": "FAIL",
+      "link_state": "UNKNOWN",
+      "hop_R1_reachability": "PASS"
+    },
+    "identified_symptoms": [
+      "Missing routing table entry for destination network 192.168.30.0/24 on router R1"
+    ],
+    "likely_cause": "Missing Static Route to 192.168.30.0/24 on R1",
+    "suspected_failure_location": "Routing Table of R1",
+    "path_hops": [
+      {
+        "device_id": "dev-pc1",
+        "device_name": "PC1",
+        "device_type": "PC",
+        "ip": "192.168.10.10",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-sw1",
+        "device_name": "SW1",
+        "device_type": "Switch",
+        "ip": "192.168.10.2",
+        "reachability": "UNKNOWN",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r1",
+        "device_name": "R1",
+        "device_type": "Router",
+        "ip": "192.168.10.1",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r2",
+        "device_name": "R2",
+        "device_type": "Router",
+        "ip": "192.168.20.1",
+        "reachability": "NOT_TESTED",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r3",
+        "device_name": "R3",
+        "device_type": "Router",
+        "ip": "192.168.30.1",
+        "reachability": "NOT_TESTED",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-sw3",
+        "device_name": "SW3",
+        "device_type": "Switch",
+        "ip": "192.168.30.2",
+        "reachability": "UNKNOWN",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-server1",
+        "device_name": "Server1",
+        "device_type": "Server",
+        "ip": "192.168.30.10",
+        "reachability": "FAIL",
+        "is_fault_region": true
+      }
+    ],
+    "localized_link": null,
+    "supporting_evidence": [
+      {
+        "source": "ping",
+        "description": "Host Ping: 0% success (0/4 received)",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "show ip route",
+        "description": "Parsed 4 routing table entries.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "routing_table",
+        "description": "Routing table check on R1 confirmed route to 192.168.30.0/24 is absent (route_found = NO).",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "routing_table",
+        "description": "Destination traffic to 192.168.30.0/24 cannot be forwarded past R1 without a matching route or default route.",
+        "status": "SUPPORTING"
+      }
+    ],
+    "recommended_actions": [
+      "Access router R1 in Packet Tracer.",
+      "Configure the missing static route: 'ip route 192.168.30.0 255.255.255.0 10.0.12.2'.",
+      "Confirm the route appears using 'show ip route'.",
+      "Check reverse path route on destination router back to source network."
+    ],
+    "unresolved_questions": [],
+    "is_resolved": false,
+    "resolution_notes": null,
+    "recovery_verification_status": "PENDING",
+    "raw_evidence": {
+      "ping_output": "Pinging 192.168.30.10 with 32 bytes of data:\nReply from 192.168.10.1: Destination host unreachable.\nReply from 192.168.10.1: Destination host unreachable.\nPackets: Sent = 4, Received = 0, Lost = 4 (100% loss)",
+      "traceroute_output": null,
+      "show_ip_int_brief": null,
+      "show_ip_route": "Gateway of last resort is not set\n     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC       10.0.12.0/30 is directly connected, Serial0/1/0\nL       10.0.12.1/32 is directly connected, Serial0/1/0\nC       192.168.10.0/24 is directly connected, GigabitEthernet0/0\nL       192.168.10.1/32 is directly connected, GigabitEthernet0/0",
+      "show_running_config": null
+    },
+    "structured_results": {
+      "source_config_valid": "PASS",
+      "configured_source_ip": "192.168.10.10",
+      "configured_subnet_mask": "255.255.255.0",
+      "configured_default_gateway": "192.168.10.1",
+      "default_gateway_ping": "PASS",
+      "intermediate_hops": [
+        {
+          "hop_device": "R1",
+          "hop_ip": null,
+          "reachability": "PASS"
+        }
+      ],
+      "destination_ping": "FAIL",
+      "interface_observations": [],
+      "routing_observations": [
+        {
+          "router_name": "R1",
+          "destination_network": "192.168.30.0/24",
+          "expected_route": null,
+          "route_found": "NO",
+          "next_hop": "10.0.12.2"
+        }
+      ],
+      "acl_vlan_observation": null,
+      "link_status_observation": "UNKNOWN",
+      "failed_link_id": null,
+      "additional_observations": null
+    }
+  },
+  {
+    "id": "diag-3d1901a1",
+    "session_id": "SES-20261011155331-193D",
+    "timestamp": "2026-10-11T15:53:31.731488+00:00",
+    "network_id": "net-cisco-sample-01",
+    "network_name": "Enterprise Campus & Branch Network",
+    "source_device": "PC1",
+    "source_ip": "192.168.10.10",
+    "destination_device": "Server1",
+    "destination_ip": "192.168.30.10",
+    "overall_status": "FAULT DETECTED",
+    "confidence": "High",
+    "confidence_reason": "Interface Serial0/1/0 on R1 is explicitly reported as administratively down and lies on the active communication path.",
+    "individual_tests": {
+      "source_ip_configuration": "PASS",
+      "default_gateway_ping": "PASS",
+      "destination_ping": "FAIL",
+      "link_state": "LINK_DOWN",
+      "hop_R1_reachability": "PASS",
+      "hop_R2_reachability": "FAIL"
+    },
+    "identified_symptoms": [
+      "Router interface Serial0/1/0 on R1 is administratively disabled (shutdown)"
+    ],
+    "likely_cause": "Interface Serial0/1/0 Administratively Down ('shutdown' state)",
+    "suspected_failure_location": "R1 [Serial0/1/0]",
+    "path_hops": [
+      {
+        "device_id": "dev-pc1",
+        "device_name": "PC1",
+        "device_type": "PC",
+        "ip": "192.168.10.10",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-sw1",
+        "device_name": "SW1",
+        "device_type": "Switch",
+        "ip": "192.168.10.2",
+        "reachability": "UNKNOWN",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r1",
+        "device_name": "R1",
+        "device_type": "Router",
+        "ip": "192.168.10.1",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r2",
+        "device_name": "R2",
+        "device_type": "Router",
+        "ip": "192.168.20.1",
+        "reachability": "FAIL",
+        "is_fault_region": true
+      },
+      {
+        "device_id": "dev-r3",
+        "device_name": "R3",
+        "device_type": "Router",
+        "ip": "192.168.30.1",
+        "reachability": "NOT_TESTED",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-sw3",
+        "device_name": "SW3",
+        "device_type": "Switch",
+        "ip": "192.168.30.2",
+        "reachability": "UNKNOWN",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-server1",
+        "device_name": "Server1",
+        "device_type": "Server",
+        "ip": "192.168.30.10",
+        "reachability": "FAIL",
+        "is_fault_region": false
+      }
+    ],
+    "localized_link": {
+      "link_id": "link-r1-r2",
+      "device_a": "R1",
+      "interface_a": "Serial0/1/0",
+      "device_b": "R2",
+      "interface_b": "Serial0/1/0",
+      "description": "R1 (Serial0/1/0) <-> R2 (Serial0/1/0)"
+    },
+    "supporting_evidence": [
+      {
+        "source": "show ip int brief",
+        "description": "Parsed 3 interface status records.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "interface_state",
+        "description": "R1 interface Serial0/1/0 has administrative status: 'administratively down'.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "interface_state",
+        "description": "Path relevance: Confirmed on active route",
+        "status": "SUPPORTING"
+      }
+    ],
+    "recommended_actions": [
+      "Access router R1 CLI in Packet Tracer.",
+      "Enter global configuration mode: 'configure terminal'.",
+      "Select interface: 'interface Serial0/1/0'.",
+      "Issue command: 'no shutdown' to administratively enable the port.",
+      "Verify interface comes up using 'show ip interface brief'."
+    ],
+    "unresolved_questions": [],
+    "is_resolved": false,
+    "resolution_notes": null,
+    "recovery_verification_status": "PENDING",
+    "raw_evidence": {
+      "ping_output": null,
+      "traceroute_output": null,
+      "show_ip_int_brief": "Interface                  IP-Address      OK? Method Status                Protocol\nGigabitEthernet0/0          192.168.10.1    YES manual up                    up      \nSerial0/1/0                10.0.12.1       YES manual administratively down down    \nSerial0/1/1                unassigned      YES unset  administratively down down",
+      "show_ip_route": null,
+      "show_running_config": null
+    },
+    "structured_results": {
+      "source_config_valid": "PASS",
+      "configured_source_ip": "192.168.10.10",
+      "configured_subnet_mask": "255.255.255.0",
+      "configured_default_gateway": "192.168.10.1",
+      "default_gateway_ping": "PASS",
+      "intermediate_hops": [
+        {
+          "hop_device": "R1",
+          "hop_ip": null,
+          "reachability": "PASS"
+        },
+        {
+          "hop_device": "R2",
+          "hop_ip": null,
+          "reachability": "FAIL"
+        }
+      ],
+      "destination_ping": "FAIL",
+      "interface_observations": [
+        {
+          "router_name": "R1",
+          "interface_name": "Serial0/1/0",
+          "operational_status": "down",
+          "administrative_status": "administratively down"
+        },
+        {
+          "router_name": "ParsedRouter",
+          "interface_name": "Serial0/1/1",
+          "operational_status": "down",
+          "administrative_status": "administratively down"
+        }
+      ],
+      "routing_observations": [],
+      "acl_vlan_observation": null,
+      "link_status_observation": "LINK_DOWN",
+      "failed_link_id": null,
+      "additional_observations": null
+    }
+  },
+  {
+    "id": "diag-a41b3690",
+    "session_id": "SES-20261011155331-B0E0",
+    "timestamp": "2026-10-11T15:53:31.702095+00:00",
+    "network_id": "net-cisco-sample-01",
+    "network_name": "Enterprise Campus & Branch Network",
+    "source_device": "PC1",
+    "source_ip": "192.168.10.10",
+    "destination_device": "Server1",
+    "destination_ip": "192.168.30.10",
+    "overall_status": "HEALTHY",
+    "confidence": "High",
+    "confidence_reason": "All tested hops and end-to-end communications succeeded without contradictory evidence.",
+    "individual_tests": {
+      "source_ip_configuration": "PASS",
+      "default_gateway_ping": "PASS",
+      "destination_ping": "PASS",
+      "link_state": "ALL_UP",
+      "hop_R1_reachability": "PASS",
+      "hop_R2_reachability": "PASS",
+      "hop_R3_reachability": "PASS"
+    },
+    "identified_symptoms": [
+      "No anomalous symptoms detected. All connectivity tests passed."
+    ],
+    "likely_cause": "None. Network connectivity is fully operational.",
+    "suspected_failure_location": "N/A - Fully Functional",
+    "path_hops": [
+      {
+        "device_id": "dev-pc1",
+        "device_name": "PC1",
+        "device_type": "PC",
+        "ip": "192.168.10.10",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-sw1",
+        "device_name": "SW1",
+        "device_type": "Switch",
+        "ip": "192.168.10.2",
+        "reachability": "UNKNOWN",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r1",
+        "device_name": "R1",
+        "device_type": "Router",
+        "ip": "192.168.10.1",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r2",
+        "device_name": "R2",
+        "device_type": "Router",
+        "ip": "192.168.20.1",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r3",
+        "device_name": "R3",
+        "device_type": "Router",
+        "ip": "192.168.30.1",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-sw3",
+        "device_name": "SW3",
+        "device_type": "Switch",
+        "ip": "192.168.30.2",
+        "reachability": "UNKNOWN",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-server1",
+        "device_name": "Server1",
+        "device_type": "Server",
+        "ip": "192.168.30.10",
+        "reachability": "PASS",
+        "is_fault_region": false
+      }
+    ],
+    "localized_link": null,
+    "supporting_evidence": [
+      {
+        "source": "ping",
+        "description": "Host Ping: 100% success (4/4 received)",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "traceroute",
+        "description": "Traceroute: 4 hops parsed. Last responding: 192.168.30.10.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "connectivity_test",
+        "description": "Ping to default gateway passed.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "connectivity_test",
+        "description": "End-to-end ping from PC1 to Server1 passed.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "connectivity_test",
+        "description": "All tested intermediate interfaces and routes are active.",
+        "status": "SUPPORTING"
+      }
+    ],
+    "recommended_actions": [
+      "Network is healthy. No troubleshooting required.",
+      "Save diagnostic report as baseline benchmark for future comparative analysis."
+    ],
+    "unresolved_questions": [],
+    "is_resolved": false,
+    "resolution_notes": null,
+    "recovery_verification_status": "PENDING",
+    "raw_evidence": {
+      "ping_output": "Pinging 192.168.30.10 with 32 bytes of data:\nReply from 192.168.30.10: bytes=32 time=2ms TTL=126\nReply from 192.168.30.10: bytes=32 time=1ms TTL=126\nPackets: Sent = 4, Received = 4, Lost = 0 (0% loss)",
+      "traceroute_output": "Tracing route to 192.168.30.10 over a maximum of 30 hops:\n  1   <1 ms    <1 ms    <1 ms  192.168.10.1\n  2    1 ms     1 ms     1 ms  10.0.12.2\n  3    2 ms     1 ms     2 ms  10.0.23.2\n  4    2 ms     2 ms     2 ms  192.168.30.10\nTrace complete.",
+      "show_ip_int_brief": null,
+      "show_ip_route": null,
+      "show_running_config": null
+    },
+    "structured_results": {
+      "source_config_valid": "PASS",
+      "configured_source_ip": "192.168.10.10",
+      "configured_subnet_mask": "255.255.255.0",
+      "configured_default_gateway": "192.168.10.1",
+      "default_gateway_ping": "PASS",
+      "intermediate_hops": [
+        {
+          "hop_device": "R1",
+          "hop_ip": "192.168.10.1",
+          "reachability": "PASS"
+        },
+        {
+          "hop_device": "R2",
+          "hop_ip": "10.0.12.2",
+          "reachability": "PASS"
+        },
+        {
+          "hop_device": "R3",
+          "hop_ip": "10.0.23.2",
+          "reachability": "PASS"
+        }
+      ],
+      "destination_ping": "PASS",
+      "interface_observations": [
+        {
+          "router_name": "R1",
+          "interface_name": "GigabitEthernet0/0",
+          "operational_status": "up",
+          "administrative_status": "up"
+        },
+        {
+          "router_name": "R1",
+          "interface_name": "Serial0/1/0",
+          "operational_status": "up",
+          "administrative_status": "up"
+        },
+        {
+          "router_name": "R2",
+          "interface_name": "Serial0/1/1",
+          "operational_status": "up",
+          "administrative_status": "up"
+        }
+      ],
+      "routing_observations": [
+        {
+          "router_name": "R1",
+          "destination_network": "192.168.30.0/24",
+          "expected_route": null,
+          "route_found": "YES",
+          "next_hop": "10.0.12.2"
+        }
+      ],
+      "acl_vlan_observation": null,
+      "link_status_observation": "ALL_UP",
+      "failed_link_id": null,
+      "additional_observations": null
+    }
+  },
+  {
+    "id": "diag-8d27e9f7",
+    "session_id": "SES-20261011153303-12C1",
+    "timestamp": "2026-10-11T15:33:03.392651+00:00",
+    "network_id": "net-cisco-sample-01",
+    "network_name": "Enterprise Campus & Branch Network",
+    "source_device": "PC1",
+    "source_ip": "192.168.10.10",
+    "destination_device": "Server1",
+    "destination_ip": "192.168.30.10",
+    "overall_status": "FAULT DETECTED",
+    "confidence": "High",
+    "confidence_reason": "Routing table inspection explicitly confirmed the absent routing prefix on intermediate router.",
+    "individual_tests": {
+      "source_ip_configuration": "PASS",
+      "default_gateway_ping": "PASS",
+      "destination_ping": "FAIL",
+      "link_state": "UNKNOWN",
+      "hop_R1_reachability": "PASS"
+    },
+    "identified_symptoms": [
+      "Missing routing table entry for destination network 192.168.30.0/24 on router R1"
+    ],
+    "likely_cause": "Missing Static Route to 192.168.30.0/24 on R1",
+    "suspected_failure_location": "Routing Table of R1",
+    "path_hops": [
+      {
+        "device_id": "dev-pc1",
+        "device_name": "PC1",
+        "device_type": "PC",
+        "ip": "192.168.10.10",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-sw1",
+        "device_name": "SW1",
+        "device_type": "Switch",
+        "ip": "192.168.10.2",
+        "reachability": "UNKNOWN",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r1",
+        "device_name": "R1",
+        "device_type": "Router",
+        "ip": "192.168.10.1",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r2",
+        "device_name": "R2",
+        "device_type": "Router",
+        "ip": "192.168.20.1",
+        "reachability": "NOT_TESTED",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r3",
+        "device_name": "R3",
+        "device_type": "Router",
+        "ip": "192.168.30.1",
+        "reachability": "NOT_TESTED",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-sw3",
+        "device_name": "SW3",
+        "device_type": "Switch",
+        "ip": "192.168.30.2",
+        "reachability": "UNKNOWN",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-server1",
+        "device_name": "Server1",
+        "device_type": "Server",
+        "ip": "192.168.30.10",
+        "reachability": "FAIL",
+        "is_fault_region": true
+      }
+    ],
+    "localized_link": null,
+    "supporting_evidence": [
+      {
+        "source": "ping",
+        "description": "Host Ping: 0% success (0/4 received)",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "show ip route",
+        "description": "Parsed 4 routing table entries.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "routing_table",
+        "description": "Routing table check on R1 confirmed route to 192.168.30.0/24 is absent (route_found = NO).",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "routing_table",
+        "description": "Destination traffic to 192.168.30.0/24 cannot be forwarded past R1 without a matching route or default route.",
+        "status": "SUPPORTING"
+      }
+    ],
+    "recommended_actions": [
+      "Access router R1 in Packet Tracer.",
+      "Configure the missing static route: 'ip route 192.168.30.0 255.255.255.0 10.0.12.2'.",
+      "Confirm the route appears using 'show ip route'.",
+      "Check reverse path route on destination router back to source network."
+    ],
+    "unresolved_questions": [],
+    "is_resolved": false,
+    "resolution_notes": null,
+    "recovery_verification_status": "PENDING",
+    "raw_evidence": {
+      "ping_output": "Pinging 192.168.30.10 with 32 bytes of data:\nReply from 192.168.10.1: Destination host unreachable.\nReply from 192.168.10.1: Destination host unreachable.\nPackets: Sent = 4, Received = 0, Lost = 4 (100% loss)",
+      "traceroute_output": null,
+      "show_ip_int_brief": null,
+      "show_ip_route": "Gateway of last resort is not set\n     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC       10.0.12.0/30 is directly connected, Serial0/1/0\nL       10.0.12.1/32 is directly connected, Serial0/1/0\nC       192.168.10.0/24 is directly connected, GigabitEthernet0/0\nL       192.168.10.1/32 is directly connected, GigabitEthernet0/0",
+      "show_running_config": null
+    },
+    "structured_results": {
+      "source_config_valid": "PASS",
+      "configured_source_ip": "192.168.10.10",
+      "configured_subnet_mask": "255.255.255.0",
+      "configured_default_gateway": "192.168.10.1",
+      "default_gateway_ping": "PASS",
+      "intermediate_hops": [
+        {
+          "hop_device": "R1",
+          "hop_ip": null,
+          "reachability": "PASS"
+        }
+      ],
+      "destination_ping": "FAIL",
+      "interface_observations": [],
+      "routing_observations": [
+        {
+          "router_name": "R1",
+          "destination_network": "192.168.30.0/24",
+          "expected_route": null,
+          "route_found": "NO",
+          "next_hop": "10.0.12.2"
+        }
+      ],
+      "acl_vlan_observation": null,
+      "link_status_observation": "UNKNOWN",
+      "failed_link_id": null,
+      "additional_observations": null
+    }
+  },
+  {
+    "id": "diag-aa55ed3e",
+    "session_id": "SES-20261011153303-65AB",
+    "timestamp": "2026-10-11T15:33:03.330003+00:00",
+    "network_id": "net-cisco-sample-01",
+    "network_name": "Enterprise Campus & Branch Network",
+    "source_device": "PC1",
+    "source_ip": "192.168.10.10",
+    "destination_device": "Server1",
+    "destination_ip": "192.168.30.10",
+    "overall_status": "FAULT DETECTED",
+    "confidence": "High",
+    "confidence_reason": "Interface Serial0/1/0 on R1 is explicitly reported as administratively down and lies on the active communication path.",
+    "individual_tests": {
+      "source_ip_configuration": "PASS",
+      "default_gateway_ping": "PASS",
+      "destination_ping": "FAIL",
+      "link_state": "LINK_DOWN",
+      "hop_R1_reachability": "PASS",
+      "hop_R2_reachability": "FAIL"
+    },
+    "identified_symptoms": [
+      "Router interface Serial0/1/0 on R1 is administratively disabled (shutdown)"
+    ],
+    "likely_cause": "Interface Serial0/1/0 Administratively Down ('shutdown' state)",
+    "suspected_failure_location": "R1 [Serial0/1/0]",
+    "path_hops": [
+      {
+        "device_id": "dev-pc1",
+        "device_name": "PC1",
+        "device_type": "PC",
+        "ip": "192.168.10.10",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-sw1",
+        "device_name": "SW1",
+        "device_type": "Switch",
+        "ip": "192.168.10.2",
+        "reachability": "UNKNOWN",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r1",
+        "device_name": "R1",
+        "device_type": "Router",
+        "ip": "192.168.10.1",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r2",
+        "device_name": "R2",
+        "device_type": "Router",
+        "ip": "192.168.20.1",
+        "reachability": "FAIL",
+        "is_fault_region": true
+      },
+      {
+        "device_id": "dev-r3",
+        "device_name": "R3",
+        "device_type": "Router",
+        "ip": "192.168.30.1",
+        "reachability": "NOT_TESTED",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-sw3",
+        "device_name": "SW3",
+        "device_type": "Switch",
+        "ip": "192.168.30.2",
+        "reachability": "UNKNOWN",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-server1",
+        "device_name": "Server1",
+        "device_type": "Server",
+        "ip": "192.168.30.10",
+        "reachability": "FAIL",
+        "is_fault_region": false
+      }
+    ],
+    "localized_link": {
+      "link_id": "link-r1-r2",
+      "device_a": "R1",
+      "interface_a": "Serial0/1/0",
+      "device_b": "R2",
+      "interface_b": "Serial0/1/0",
+      "description": "R1 (Serial0/1/0) <-> R2 (Serial0/1/0)"
+    },
+    "supporting_evidence": [
+      {
+        "source": "show ip int brief",
+        "description": "Parsed 3 interface status records.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "interface_state",
+        "description": "R1 interface Serial0/1/0 has administrative status: 'administratively down'.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "interface_state",
+        "description": "Path relevance: Confirmed on active route",
+        "status": "SUPPORTING"
+      }
+    ],
+    "recommended_actions": [
+      "Access router R1 CLI in Packet Tracer.",
+      "Enter global configuration mode: 'configure terminal'.",
+      "Select interface: 'interface Serial0/1/0'.",
+      "Issue command: 'no shutdown' to administratively enable the port.",
+      "Verify interface comes up using 'show ip interface brief'."
+    ],
+    "unresolved_questions": [],
+    "is_resolved": false,
+    "resolution_notes": null,
+    "recovery_verification_status": "PENDING",
+    "raw_evidence": {
+      "ping_output": null,
+      "traceroute_output": null,
+      "show_ip_int_brief": "Interface                  IP-Address      OK? Method Status                Protocol\nGigabitEthernet0/0          192.168.10.1    YES manual up                    up      \nSerial0/1/0                10.0.12.1       YES manual administratively down down    \nSerial0/1/1                unassigned      YES unset  administratively down down",
+      "show_ip_route": null,
+      "show_running_config": null
+    },
+    "structured_results": {
+      "source_config_valid": "PASS",
+      "configured_source_ip": "192.168.10.10",
+      "configured_subnet_mask": "255.255.255.0",
+      "configured_default_gateway": "192.168.10.1",
+      "default_gateway_ping": "PASS",
+      "intermediate_hops": [
+        {
+          "hop_device": "R1",
+          "hop_ip": null,
+          "reachability": "PASS"
+        },
+        {
+          "hop_device": "R2",
+          "hop_ip": null,
+          "reachability": "FAIL"
+        }
+      ],
+      "destination_ping": "FAIL",
+      "interface_observations": [
+        {
+          "router_name": "R1",
+          "interface_name": "Serial0/1/0",
+          "operational_status": "down",
+          "administrative_status": "administratively down"
+        },
+        {
+          "router_name": "ParsedRouter",
+          "interface_name": "Serial0/1/1",
+          "operational_status": "down",
+          "administrative_status": "administratively down"
+        }
+      ],
+      "routing_observations": [],
+      "acl_vlan_observation": null,
+      "link_status_observation": "LINK_DOWN",
+      "failed_link_id": null,
+      "additional_observations": null
+    }
+  },
+  {
+    "id": "diag-29aa2a41",
+    "session_id": "SES-20261011153303-55C9",
+    "timestamp": "2026-10-11T15:33:03.302458+00:00",
+    "network_id": "net-cisco-sample-01",
+    "network_name": "Enterprise Campus & Branch Network",
+    "source_device": "PC1",
+    "source_ip": "192.168.10.10",
+    "destination_device": "Server1",
+    "destination_ip": "192.168.30.10",
+    "overall_status": "HEALTHY",
+    "confidence": "High",
+    "confidence_reason": "All tested hops and end-to-end communications succeeded without contradictory evidence.",
+    "individual_tests": {
+      "source_ip_configuration": "PASS",
+      "default_gateway_ping": "PASS",
+      "destination_ping": "PASS",
+      "link_state": "ALL_UP",
+      "hop_R1_reachability": "PASS",
+      "hop_R2_reachability": "PASS",
+      "hop_R3_reachability": "PASS"
+    },
+    "identified_symptoms": [
+      "No anomalous symptoms detected. All connectivity tests passed."
+    ],
+    "likely_cause": "None. Network connectivity is fully operational.",
+    "suspected_failure_location": "N/A - Fully Functional",
+    "path_hops": [
+      {
+        "device_id": "dev-pc1",
+        "device_name": "PC1",
+        "device_type": "PC",
+        "ip": "192.168.10.10",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-sw1",
+        "device_name": "SW1",
+        "device_type": "Switch",
+        "ip": "192.168.10.2",
+        "reachability": "UNKNOWN",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r1",
+        "device_name": "R1",
+        "device_type": "Router",
+        "ip": "192.168.10.1",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r2",
+        "device_name": "R2",
+        "device_type": "Router",
+        "ip": "192.168.20.1",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-r3",
+        "device_name": "R3",
+        "device_type": "Router",
+        "ip": "192.168.30.1",
+        "reachability": "PASS",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-sw3",
+        "device_name": "SW3",
+        "device_type": "Switch",
+        "ip": "192.168.30.2",
+        "reachability": "UNKNOWN",
+        "is_fault_region": false
+      },
+      {
+        "device_id": "dev-server1",
+        "device_name": "Server1",
+        "device_type": "Server",
+        "ip": "192.168.30.10",
+        "reachability": "PASS",
+        "is_fault_region": false
+      }
+    ],
+    "localized_link": null,
+    "supporting_evidence": [
+      {
+        "source": "ping",
+        "description": "Host Ping: 100% success (4/4 received)",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "traceroute",
+        "description": "Traceroute: 4 hops parsed. Last responding: 192.168.30.10.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "connectivity_test",
+        "description": "Ping to default gateway passed.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "connectivity_test",
+        "description": "End-to-end ping from PC1 to Server1 passed.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "connectivity_test",
+        "description": "All tested intermediate interfaces and routes are active.",
+        "status": "SUPPORTING"
+      }
+    ],
+    "recommended_actions": [
+      "Network is healthy. No troubleshooting required.",
+      "Save diagnostic report as baseline benchmark for future comparative analysis."
+    ],
+    "unresolved_questions": [],
+    "is_resolved": false,
+    "resolution_notes": null,
+    "recovery_verification_status": "PENDING",
+    "raw_evidence": {
+      "ping_output": "Pinging 192.168.30.10 with 32 bytes of data:\nReply from 192.168.30.10: bytes=32 time=2ms TTL=126\nReply from 192.168.30.10: bytes=32 time=1ms TTL=126\nPackets: Sent = 4, Received = 4, Lost = 0 (0% loss)",
+      "traceroute_output": "Tracing route to 192.168.30.10 over a maximum of 30 hops:\n  1   <1 ms    <1 ms    <1 ms  192.168.10.1\n  2    1 ms     1 ms     1 ms  10.0.12.2\n  3    2 ms     1 ms     2 ms  10.0.23.2\n  4    2 ms     2 ms     2 ms  192.168.30.10\nTrace complete.",
+      "show_ip_int_brief": null,
+      "show_ip_route": null,
+      "show_running_config": null
+    },
+    "structured_results": {
+      "source_config_valid": "PASS",
+      "configured_source_ip": "192.168.10.10",
+      "configured_subnet_mask": "255.255.255.0",
+      "configured_default_gateway": "192.168.10.1",
+      "default_gateway_ping": "PASS",
+      "intermediate_hops": [
+        {
+          "hop_device": "R1",
+          "hop_ip": "192.168.10.1",
+          "reachability": "PASS"
+        },
+        {
+          "hop_device": "R2",
+          "hop_ip": "10.0.12.2",
+          "reachability": "PASS"
+        },
+        {
+          "hop_device": "R3",
+          "hop_ip": "10.0.23.2",
+          "reachability": "PASS"
+        }
+      ],
+      "destination_ping": "PASS",
+      "interface_observations": [
+        {
+          "router_name": "R1",
+          "interface_name": "GigabitEthernet0/0",
+          "operational_status": "up",
+          "administrative_status": "up"
+        },
+        {
+          "router_name": "R1",
+          "interface_name": "Serial0/1/0",
+          "operational_status": "up",
+          "administrative_status": "up"
+        },
+        {
+          "router_name": "R2",
+          "interface_name": "Serial0/1/1",
+          "operational_status": "up",
+          "administrative_status": "up"
+        }
+      ],
+      "routing_observations": [
+        {
+          "router_name": "R1",
+          "destination_network": "192.168.30.0/24",
+          "expected_route": null,
+          "route_found": "YES",
+          "next_hop": "10.0.12.2"
+        }
+      ],
+      "acl_vlan_observation": null,
+      "link_status_observation": "ALL_UP",
+      "failed_link_id": null,
+      "additional_observations": null
+    }
+  },
+  {
+    "id": "diag-a17aa41f",
+    "session_id": "SES-20261011152925-9C57",
+    "timestamp": "2026-10-11T15:29:25.500972+00:00",
+    "network_id": "net-cisco-sample-01",
+    "network_name": "Enterprise Campus & Branch Network",
+    "source_device": "PC1",
+    "source_ip": "192.168.10.10",
+    "destination_device": "dev-server1",
+    "destination_ip": null,
+    "overall_status": "FAULT DETECTED",
+    "confidence": "High",
+    "confidence_reason": "Direct comparison against network profile verified configuration mismatch.",
+    "individual_tests": {
+      "source_ip_configuration": "PASS",
+      "default_gateway_ping": "PASS",
+      "destination_ping": "FAIL",
+      "link_state": "UNKNOWN",
+      "hop_R1_reachability": "PASS"
+    },
+    "identified_symptoms": [
+      "Host configuration error on PC1"
+    ],
+    "likely_cause": "Source Host IP Configuration Mismatch",
+    "suspected_failure_location": "PC1 Network Settings",
+    "path_hops": [],
+    "localized_link": null,
+    "supporting_evidence": [
+      {
+        "source": "ping",
+        "description": "Host Ping: 0% success (0/4 received)",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "show ip route",
+        "description": "Parsed 4 routing table entries.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "source_config",
+        "description": "Configured IP '192.168.10.10' does not match intended network design '192.168.1.10'",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "source_config",
+        "description": "Configured Default Gateway '192.168.10.1' does not match intended '192.168.1.1'",
+        "status": "SUPPORTING"
+      }
+    ],
+    "recommended_actions": [
+      "Verify IP address, subnet mask, and default gateway on PC1.",
+      "In Packet Tracer, open PC1 -> Desktop -> IP Configuration and ensure Default Gateway matches the local router interface IP.",
+      "Run 'ipconfig /all' in the PC command prompt to verify settings."
+    ],
+    "unresolved_questions": [],
+    "is_resolved": false,
+    "resolution_notes": null,
+    "recovery_verification_status": "PENDING",
+    "raw_evidence": {
+      "ping_output": "Pinging 192.168.30.10 with 32 bytes of data:\nReply from 192.168.10.1: Destination host unreachable.\nReply from 192.168.10.1: Destination host unreachable.\nPackets: Sent = 4, Received = 0, Lost = 4 (100% loss)",
+      "traceroute_output": null,
+      "show_ip_int_brief": null,
+      "show_ip_route": "Gateway of last resort is not set\n     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks\nC       10.0.12.0/30 is directly connected, Serial0/1/0\nL       10.0.12.1/32 is directly connected, Serial0/1/0\nC       192.168.10.0/24 is directly connected, GigabitEthernet0/0\nL       192.168.10.1/32 is directly connected, GigabitEthernet0/0",
+      "show_running_config": null
+    },
+    "structured_results": {
+      "source_config_valid": "PASS",
+      "configured_source_ip": "192.168.10.10",
+      "configured_subnet_mask": "255.255.255.0",
+      "configured_default_gateway": "192.168.10.1",
+      "default_gateway_ping": "PASS",
+      "intermediate_hops": [
+        {
+          "hop_device": "R1",
+          "hop_ip": null,
+          "reachability": "PASS"
+        }
+      ],
+      "destination_ping": "FAIL",
+      "interface_observations": [],
+      "routing_observations": [
+        {
+          "router_name": "R1",
+          "destination_network": "192.168.30.0/24",
+          "expected_route": null,
+          "route_found": "NO",
+          "next_hop": "10.0.12.2"
+        }
+      ],
+      "acl_vlan_observation": null,
+      "link_status_observation": "UNKNOWN",
+      "failed_link_id": null,
+      "additional_observations": null
+    }
+  },
+  {
+    "id": "diag-b5b74289",
+    "session_id": "SES-20261011152925-76AC",
+    "timestamp": "2026-10-11T15:29:25.415902+00:00",
+    "network_id": "net-cisco-sample-01",
+    "network_name": "Enterprise Campus & Branch Network",
+    "source_device": "PC1",
+    "source_ip": "192.168.10.10",
+    "destination_device": "dev-server1",
+    "destination_ip": null,
+    "overall_status": "FAULT DETECTED",
+    "confidence": "High",
+    "confidence_reason": "Direct comparison against network profile verified configuration mismatch.",
+    "individual_tests": {
+      "source_ip_configuration": "PASS",
+      "default_gateway_ping": "PASS",
+      "destination_ping": "FAIL",
+      "link_state": "LINK_DOWN",
+      "hop_R1_reachability": "PASS",
+      "hop_R2_reachability": "FAIL"
+    },
+    "identified_symptoms": [
+      "Host configuration error on PC1"
+    ],
+    "likely_cause": "Source Host IP Configuration Mismatch",
+    "suspected_failure_location": "PC1 Network Settings",
+    "path_hops": [],
+    "localized_link": null,
+    "supporting_evidence": [
+      {
+        "source": "show ip int brief",
+        "description": "Parsed 3 interface status records.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "source_config",
+        "description": "Configured IP '192.168.10.10' does not match intended network design '192.168.1.10'",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "source_config",
+        "description": "Configured Default Gateway '192.168.10.1' does not match intended '192.168.1.1'",
+        "status": "SUPPORTING"
+      }
+    ],
+    "recommended_actions": [
+      "Verify IP address, subnet mask, and default gateway on PC1.",
+      "In Packet Tracer, open PC1 -> Desktop -> IP Configuration and ensure Default Gateway matches the local router interface IP.",
+      "Run 'ipconfig /all' in the PC command prompt to verify settings."
+    ],
+    "unresolved_questions": [],
+    "is_resolved": false,
+    "resolution_notes": null,
+    "recovery_verification_status": "PENDING",
+    "raw_evidence": {
+      "ping_output": null,
+      "traceroute_output": null,
+      "show_ip_int_brief": "Interface                  IP-Address      OK? Method Status                Protocol\nGigabitEthernet0/0          192.168.10.1    YES manual up                    up      \nSerial0/1/0                10.0.12.1       YES manual administratively down down    \nSerial0/1/1                unassigned      YES unset  administratively down down",
+      "show_ip_route": null,
+      "show_running_config": null
+    },
+    "structured_results": {
+      "source_config_valid": "PASS",
+      "configured_source_ip": "192.168.10.10",
+      "configured_subnet_mask": "255.255.255.0",
+      "configured_default_gateway": "192.168.10.1",
+      "default_gateway_ping": "PASS",
+      "intermediate_hops": [
+        {
+          "hop_device": "R1",
+          "hop_ip": null,
+          "reachability": "PASS"
+        },
+        {
+          "hop_device": "R2",
+          "hop_ip": null,
+          "reachability": "FAIL"
+        }
+      ],
+      "destination_ping": "FAIL",
+      "interface_observations": [
+        {
+          "router_name": "R1",
+          "interface_name": "Serial0/1/0",
+          "operational_status": "down",
+          "administrative_status": "administratively down"
+        },
+        {
+          "router_name": "ParsedRouter",
+          "interface_name": "Serial0/1/1",
+          "operational_status": "down",
+          "administrative_status": "administratively down"
+        }
+      ],
+      "routing_observations": [],
+      "acl_vlan_observation": null,
+      "link_status_observation": "LINK_DOWN",
+      "failed_link_id": null,
+      "additional_observations": null
+    }
+  },
+  {
+    "id": "diag-06d26c99",
+    "session_id": "SES-20261011152925-A33B",
+    "timestamp": "2026-10-11T15:29:25.351026+00:00",
+    "network_id": "net-cisco-sample-01",
+    "network_name": "Enterprise Campus & Branch Network",
+    "source_device": "PC1",
+    "source_ip": "192.168.10.10",
+    "destination_device": "dev-server1",
+    "destination_ip": null,
+    "overall_status": "FAULT DETECTED",
+    "confidence": "High",
+    "confidence_reason": "Direct comparison against network profile verified configuration mismatch.",
+    "individual_tests": {
+      "source_ip_configuration": "PASS",
+      "default_gateway_ping": "PASS",
+      "destination_ping": "PASS",
+      "link_state": "ALL_UP",
+      "hop_R1_reachability": "PASS",
+      "hop_R2_reachability": "PASS",
+      "hop_R3_reachability": "PASS"
+    },
+    "identified_symptoms": [
+      "Host configuration error on PC1"
+    ],
+    "likely_cause": "Source Host IP Configuration Mismatch",
+    "suspected_failure_location": "PC1 Network Settings",
+    "path_hops": [],
+    "localized_link": null,
+    "supporting_evidence": [
+      {
+        "source": "ping",
+        "description": "Host Ping: 100% success (4/4 received)",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "traceroute",
+        "description": "Traceroute: 4 hops parsed. Last responding: 192.168.30.10.",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "source_config",
+        "description": "Configured IP '192.168.10.10' does not match intended network design '192.168.1.10'",
+        "status": "SUPPORTING"
+      },
+      {
+        "source": "source_config",
+        "description": "Configured Default Gateway '192.168.10.1' does not match intended '192.168.1.1'",
+        "status": "SUPPORTING"
+      }
+    ],
+    "recommended_actions": [
+      "Verify IP address, subnet mask, and default gateway on PC1.",
+      "In Packet Tracer, open PC1 -> Desktop -> IP Configuration and ensure Default Gateway matches the local router interface IP.",
+      "Run 'ipconfig /all' in the PC command prompt to verify settings."
+    ],
+    "unresolved_questions": [],
+    "is_resolved": false,
+    "resolution_notes": null,
+    "recovery_verification_status": "PENDING",
+    "raw_evidence": {
+      "ping_output": "Pinging 192.168.30.10 with 32 bytes of data:\nReply from 192.168.30.10: bytes=32 time=2ms TTL=126\nReply from 192.168.30.10: bytes=32 time=1ms TTL=126\nPackets: Sent = 4, Received = 4, Lost = 0 (0% loss)",
+      "traceroute_output": "Tracing route to 192.168.30.10 over a maximum of 30 hops:\n  1   <1 ms    <1 ms    <1 ms  192.168.10.1\n  2    1 ms     1 ms     1 ms  10.0.12.2\n  3    2 ms     1 ms     2 ms  10.0.23.2\n  4    2 ms     2 ms     2 ms  192.168.30.10\nTrace complete.",
+      "show_ip_int_brief": null,
+      "show_ip_route": null,
+      "show_running_config": null
+    },
+    "structured_results": {
+      "source_config_valid": "PASS",
+      "configured_source_ip": "192.168.10.10",
+      "configured_subnet_mask": "255.255.255.0",
+      "configured_default_gateway": "192.168.10.1",
+      "default_gateway_ping": "PASS",
+      "intermediate_hops": [
+        {
+          "hop_device": "R1",
+          "hop_ip": "192.168.10.1",
+          "reachability": "PASS"
+        },
+        {
+          "hop_device": "R2",
+          "hop_ip": "10.0.12.2",
+          "reachability": "PASS"
+        },
+        {
+          "hop_device": "R3",
+          "hop_ip": "10.0.23.2",
+          "reachability": "PASS"
+        }
+      ],
+      "destination_ping": "PASS",
+      "interface_observations": [
+        {
+          "router_name": "R1",
+          "interface_name": "GigabitEthernet0/0",
+          "operational_status": "up",
+          "administrative_status": "up"
+        },
+        {
+          "router_name": "R1",
+          "interface_name": "Serial0/1/0",
+          "operational_status": "up",
+          "administrative_status": "up"
+        },
+        {
+          "router_name": "R2",
+          "interface_name": "Serial0/1/1",
+          "operational_status": "up",
+          "administrative_status": "up"
+        }
+      ],
+      "routing_observations": [
+        {
+          "router_name": "R1",
+          "destination_network": "192.168.30.0/24",
+          "expected_route": null,
+          "route_found": "YES",
+          "next_hop": "10.0.12.2"
+        }
+      ],
+      "acl_vlan_observation": null,
+      "link_status_observation": "ALL_UP",
+      "failed_link_id": null,
+      "additional_observations": null
+    }
+  },
+  {
     "id": "diag-98ba2f00",
     "session_id": "SES-20261011131351-7412",
     "timestamp": "2026-10-11T13:13:51.537979+00:00",
