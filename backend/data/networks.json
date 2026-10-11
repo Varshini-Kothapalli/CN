@@ -1,0 +1,74 @@
+[
+  {
+    "id": "net-cisco-sample-01",
+    "name": "Enterprise Campus & Branch Network",
+    "description": "Standard Cisco Packet Tracer lab topology: Multi-router WAN with PC1, PC2 LANs and Server Farm",
+    "devices": [
+      {
+        "id": "dev-pc1",
+        "name": "PC1",
+        "type": "PC",
+        "ip_address": "192.168.1.10",
+        "subnet_mask": "255.255.255.0",
+        "default_gateway": "192.168.1.1",
+        "interfaces": [
+          {
+            "name": "FastEthernet0",
+            "ip_address": "192.168.10.10",
+            "subnet_mask": "255.255.255.0",
+            "status": "up",
+            "protocol": "up"
+          }
+        ],
+        "routes": []
+      },
+      {
+        "id": "dev-r1",
+        "name": "R1",
+        "type": "Router",
+        "ip_address": "192.168.1.1",
+        "subnet_mask": "255.255.255.0",
+        "default_gateway": null,
+        "interfaces": [
+          {
+            "name": "GigabitEthernet0/0",
+            "ip_address": "192.168.10.1",
+            "subnet_mask": "255.255.255.0",
+            "status": "up",
+            "protocol": "up"
+          },
+          {
+            "name": "Serial0/1/0",
+            "ip_address": "10.0.12.1",
+            "subnet_mask": "255.255.255.252",
+            "status": "up",
+            "protocol": "up"
+          }
+        ],
+        "routes": [
+          {
+            "destination_network": "192.168.20.0/24",
+            "next_hop": "10.0.12.2",
+            "interface": "Serial0/1/0",
+            "route_type": "static"
+          },
+          {
+            "destination_network": "10.0.23.0/30",
+            "next_hop": "10.0.12.2",
+            "interface": "Serial0/1/0",
+            "route_type": "static"
+          },
+          {
+            "destination_network": "192.168.30.0/24",
+            "next_hop": "10.0.12.2",
+            "interface": "Serial0/1/0",
+            "route_type": "static"
+          }
+        ]
+      }
+    ],
+    "links": [],
+    "created_at": "2026-10-11T11:11:27.666205+00:00",
+    "updated_at": "2026-10-11T13:10:19.237387+00:00"
+  }
+]
