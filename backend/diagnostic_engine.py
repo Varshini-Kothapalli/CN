@@ -144,7 +144,7 @@ def analyze_diagnostics(
     source_name = source_dev.name if source_dev else request.source_device_id
     source_ip = sr.configured_source_ip or (source_dev.ip_address if source_dev else None)
     dest_name = dest_dev.name if dest_dev else request.destination_device_id
-    dest_ip = dest_dev.ip_address if dest_dev else None
+    dest_ip = sr.configured_destination_ip or (dest_dev.ip_address if dest_dev else None)
 
     # Discover network path
     path_devices, path_links, path_interfaces = find_network_path(
@@ -433,9 +433,8 @@ def analyze_diagnostics(
             individual_tests=individual_tests
         )
 
-    # 8. Rule G: Healthy Connectivity
-    # Destination ping PASS, Gateway ping PASS (or NOT_TESTED but no fail), and no active faults
-    if sr.destination_ping == "PASS":
+    # 8. Rule G: Healthy Connectivity requires positive evidence for both pings.
+    if sr.destination_ping == "PASS" and sr.default_gateway_ping == "PASS":
         rule_g_result = apply_rule_g_healthy(request, source_dev, dest_dev)
         for ev in rule_g_result["evidence"]:
             supporting_evidence.append(DiagnosticEvidenceItem(source="connectivity_test", description=ev, status="SUPPORTING"))
@@ -561,7 +560,7 @@ def _build_report(
         source_device=source_dev.name if source_dev else request.source_device_id,
         source_ip=request.structured_results.configured_source_ip or (source_dev.ip_address if source_dev else None),
         destination_device=dest_dev.name if dest_dev else request.destination_device_id,
-        destination_ip=dest_dev.ip_address if dest_dev else None,
+        destination_ip=request.structured_results.configured_destination_ip or (dest_dev.ip_address if dest_dev else None),
         overall_status=overall_status,
         confidence=confidence,
         confidence_reason=confidence_reason,

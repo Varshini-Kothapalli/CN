@@ -15,6 +15,7 @@ from backend.models import (
 from backend.storage import (
     load_networks,
     save_network,
+    update_network as persist_network_update,
     get_network,
     delete_network,
     reset_sample_network,
@@ -67,19 +68,7 @@ def list_networks():
 
 @app.post("/api/networks", response_model=NetworkProfile, status_code=status.HTTP_201_CREATED)
 def create_network(network: NetworkProfile):
-    # Validation: unique device IDs
-    dev_ids = set()
-    for d in network.devices:
-        if d.id in dev_ids:
-            raise HTTPException(status_code=400, detail=f"Duplicate device ID found: '{d.id}'")
-        dev_ids.add(d.id)
-
-    # Validation: Link endpoints exist
-    for link in network.links:
-        if link.source_device not in dev_ids:
-            raise HTTPException(status_code=400, detail=f"Link {link.id} references non-existent source device: '{link.source_device}'")
-        if link.target_device not in dev_ids:
-            raise HTTPException(status_code=400, detail=f"Link {link.id} references non-existent target device: '{link.target_device}'")
+    _validate_network_profile(network)
 
     saved = save_network(network.model_dump())
     return saved
@@ -95,14 +84,37 @@ def get_network_by_id(network_id: str):
 
 @app.put("/api/networks/{network_id}", response_model=NetworkProfile)
 def update_network(network_id: str, network: NetworkProfile):
-    existing = get_network(network_id)
-    if not existing:
-        raise HTTPException(status_code=404, detail="Network profile not found")
+    if network.id != network_id:
+        raise HTTPException(status_code=409, detail="Network profile ID in the URL must match the request body")
 
-    network.id = network_id
+    _validate_network_profile(network)
     network.updated_at = datetime.now(timezone.utc).isoformat()
-    saved = save_network(network.model_dump())
+    try:
+        saved = persist_network_update(network_id, network.model_dump())
+    except (OSError, ValueError) as exc:
+        raise HTTPException(status_code=500, detail=f"Network profile could not be persisted: {exc}") from exc
+    if saved is None:
+        raise HTTPException(status_code=404, detail="Network profile not found")
     return saved
+
+
+def _validate_network_profile(network: NetworkProfile) -> None:
+    device_ids = [device.id for device in network.devices]
+    if len(device_ids) != len(set(device_ids)):
+        raise HTTPException(status_code=400, detail="Device IDs must be unique within a network profile")
+
+    link_ids = [link.id for link in network.links]
+    if len(link_ids) != len(set(link_ids)):
+        raise HTTPException(status_code=400, detail="Link IDs must be unique within a network profile")
+
+    known_devices = set(device_ids)
+    for link in network.links:
+        if link.source_device not in known_devices:
+            raise HTTPException(status_code=400, detail=f"Link {link.id} references non-existent source device: '{link.source_device}'")
+        if link.target_device not in known_devices:
+            raise HTTPException(status_code=400, detail=f"Link {link.id} references non-existent target device: '{link.target_device}'")
+        if link.source_device == link.target_device:
+            raise HTTPException(status_code=400, detail=f"Link {link.id} must connect two different devices")
 
 
 @app.delete("/api/networks/{network_id}")

@@ -14,7 +14,7 @@ _lock = threading.Lock()
 
 def _ensure_data_files():
     os.makedirs(DATA_DIR, exist_ok=True)
-    if not os.path.exists(NETWORKS_FILE) or os.path.getsize(NETWORKS_FILE) == 0:
+    if not os.path.exists(NETWORKS_FILE):
         sample = get_sample_network()
         _atomic_write_json(NETWORKS_FILE, [sample])
     if not os.path.exists(DIAGNOSTICS_FILE) or os.path.getsize(DIAGNOSTICS_FILE) == 0:
@@ -64,6 +64,25 @@ def save_network(network: Dict[str, Any]) -> Dict[str, Any]:
     networks.append(network)
     save_networks(networks)
     return network
+
+
+def update_network(network_id: str, network: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Replace an existing profile atomically and report when it no longer exists."""
+    with _lock:
+        _ensure_data_files()
+        with open(NETWORKS_FILE, "r", encoding="utf-8") as f:
+            networks = json.load(f)
+
+        if not isinstance(networks, list):
+            raise ValueError("Stored network profiles must be a JSON array")
+
+        for index, stored_network in enumerate(networks):
+            if stored_network.get("id") == network_id:
+                networks[index] = network
+                _atomic_write_json(NETWORKS_FILE, networks)
+                return network
+
+        return None
 
 
 def delete_network(network_id: str) -> bool:

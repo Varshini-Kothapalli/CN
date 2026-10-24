@@ -107,6 +107,7 @@ class StructuredTestResults(BaseModel):
     configured_source_ip: Optional[str] = None
     configured_subnet_mask: Optional[str] = None
     configured_default_gateway: Optional[str] = None
+    configured_destination_ip: Optional[str] = None
     default_gateway_ping: str = "NOT_TESTED"  # PASS, FAIL, UNKNOWN, NOT_TESTED
     intermediate_hops: List[HopReachability] = Field(default_factory=list)
     destination_ping: str = "NOT_TESTED"  # PASS, FAIL, UNKNOWN, NOT_TESTED
