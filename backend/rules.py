@@ -1,3 +1,4 @@
+import ipaddress
 from typing import Dict, Any, List, Optional, Tuple
 from backend.models import (
     DiagnosticRequest,
@@ -148,7 +149,7 @@ def apply_rule_c_interface_admin_down(
             is_on_path = False
             # Check if this interface matches any path interface or router
             for pi in path_interfaces:
-                if obs.interface_name.lower() in pi.lower() or pi.lower() in obs.interface_name.lower():
+                if interfaces_match(obs.interface_name, pi) or obs.interface_name.lower() in pi.lower() or pi.lower() in obs.interface_name.lower():
                     is_on_path = True
                     break
             # Also if router is part of path
@@ -252,6 +253,13 @@ def apply_rule_e_missing_route(
             target_net = ro.destination_network
             next_hop = ro.next_hop or "Expected WAN Next-Hop"
 
+            mask = "255.255.255.0"
+            try:
+                if "/" in target_net:
+                    mask = str(ipaddress.IPv4Network(target_net, strict=False).netmask)
+            except Exception:
+                pass
+
             return {
                 "rule": "Rule E",
                 "symptom": f"Missing routing table entry for destination network {target_net} on router {router}",
@@ -265,7 +273,7 @@ def apply_rule_e_missing_route(
                 "confidence_reason": "Routing table inspection explicitly confirmed the absent routing prefix on intermediate router.",
                 "actions": [
                     f"Access router {router} in Packet Tracer.",
-                    f"Configure the missing static route: 'ip route {target_net.split('/')[0]} 255.255.255.0 {next_hop}'.",
+                    f"Configure the missing static route: 'ip route {target_net.split('/')[0]} {mask} {next_hop}'.",
                     f"Confirm the route appears using 'show ip route'.",
                     f"Check reverse path route on destination router back to source network."
                 ],
